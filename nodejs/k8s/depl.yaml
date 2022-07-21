@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodejs-app
+spec:
+  selector:
+    matchLabels:
+      run: nodejs-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: nodejs-app
+    spec:
+      containers:
+        - name: nodejs-app
+          image: nodejs-test
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3001
+              name: nodejs-port
+          livenessProbe:
+            httpGet:
+              port: nodejs-port
+              path: /health
+            initialDelaySeconds: 15
+            timeoutSeconds: 30
+          readinessProbe:
+            httpGet:
+              port: nodejs-port
+              path: /ready
+            initialDelaySeconds: 15
+            timeoutSeconds: 30
+          resources:
+            limits:
+              cpu: 500m
+            requests:
+              cpu: 200m
+          
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodejs-app
+  labels:
+    run: nodejs-app
+spec:
+  ports:
+  - port: 3001
+    targetPort: 3001
+    protocol: TCP
+  selector:
+    run: nodejs-app
