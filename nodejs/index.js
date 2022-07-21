@@ -9,13 +9,24 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const { DB_PORT, DB_NAME, DB_HOST, MYSQL_HOST_IP, DB_PASSWORD, DB_USER } =
+  process.env;
+
 // home page
 app.get("/", (req, res) => {
   let x = 0.0001;
   for (let i = 0; i <= 1000000; i++) {
     x += Math.sqrt(x);
   }
-  res.status(200).send("Hi There");
+
+  res.status(200).json({
+    DB_PORT,
+    DB_NAME,
+    DB_HOST,
+    DB_PASSWORD,
+    DB_USER,
+    MYSQL_HOST_IP,
+  });
 });
 
 // home page

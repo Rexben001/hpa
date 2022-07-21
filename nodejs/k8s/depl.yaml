@@ -16,6 +16,32 @@ spec:
         - name: nodejs-app
           image: nodejs-test
           imagePullPolicy: Never
+          env:
+          - name: DB_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: db-config
+                key: db-host
+          - name: DB_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: db-config
+                key: db-port
+          - name: DB_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: db-config
+                key: db-name
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: db-secret
+                key: db-user
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: db-secret
+                key: db-password
           ports:
             - containerPort: 3001
               name: nodejs-port
@@ -36,7 +62,7 @@ spec:
               cpu: 500m
             requests:
               cpu: 200m
-          
+            
 
 ---
 apiVersion: v1
@@ -52,3 +78,21 @@ spec:
     protocol: TCP
   selector:
     run: nodejs-app
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: db-config
+data:
+  db-host: "cluster-mysql.database" 
+  db-port: "3306"
+  db-name: "my-db"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-secret
+type: Opaque
+stringData:
+  db-user: rexben
+  db-password: Nevermind123
